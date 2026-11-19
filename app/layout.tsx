@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Provider } from "@/components/providers/provider";
-import { Toaster } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/sonner"
 
 const interHeading = Inter({subsets:['latin'],variable:'--font-heading'});
 
@@ -39,7 +39,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <Provider>
           {children}
-          <Toaster/>
+          <Toaster 
+          position="top-right"
+          />
         </Provider>
       </body>
     </html>

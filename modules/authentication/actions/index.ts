@@ -25,3 +25,19 @@ export async function getCurrentUser() {
     });
     return user;
 }
+
+export async function requireAuth() {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+        return redirect("/sign-in");
+    }
+    return session.user;
+}
+
+export async function requireNoAuth() {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (session) {
+        return redirect("/");
+    }
+    return null;
+}

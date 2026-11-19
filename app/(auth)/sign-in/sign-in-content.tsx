@@ -43,12 +43,13 @@ export function SignInContent() {
         className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8"
       >
         <div className="mb-6 flex justify-center">
-          <div
-            aria-hidden="true"
-            className="flex size-11 items-center justify-center rounded-xl bg-primary font-heading text-lg font-semibold text-primary-foreground"
-          >
-            S
-          </div>
+          <Image
+            src="/logo.webp"
+            alt="Synapse logo"
+            width={56}
+            height={56}
+            className="size-14 object-contain"
+          />
         </div>
 
         <div className="text-center">
@@ -63,12 +64,12 @@ export function SignInContent() {
           </p>
         </div>
 
-        <div className="mt-7 space-y-3">
+        <div className="mt-7 space-y-2">
           <Button
             type="button"
             variant="outline"
             size="lg"
-            className="h-12 w-full justify-center gap-3 rounded-lg bg-background font-medium"
+            className="h-12 w-full justify-center gap-3 bg-background font-medium"
             disabled={pendingProvider !== null}
             onClick={() => handleSignIn("google")}
           >
@@ -80,17 +81,23 @@ export function SignInContent() {
                 alt=""
                 width={20}
                 height={20}
-                className="size-5 dark:invert"
+                className="size-4"
               />
             )}
             Continue with Google
           </Button>
 
+          <div className="flex items-center gap-3 py-1">
+            <span aria-hidden="true" className="h-px flex-1 bg-border" />
+            <span className="text-xs font-medium text-muted-foreground">OR</span>
+            <span aria-hidden="true" className="h-px flex-1 bg-border" />
+          </div>
+
           <Button
             type="button"
             variant="outline"
             size="lg"
-            className="h-12 w-full justify-center gap-3 rounded-lg bg-background font-medium"
+            className="h-12 w-full justify-center gap-3 bg-background font-medium"
             disabled={pendingProvider !== null}
             onClick={() => handleSignIn("github")}
           >

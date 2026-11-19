@@ -1,6 +1,7 @@
 import * as React from "react"
 import { ThemeProvider } from "./theme-provider"
 import { TooltipProvider } from "../ui/tooltip"
+import QueryProvider from "./query-provider"
 
 
 export function Provider({
@@ -8,6 +9,7 @@ export function Provider({
 
 }: { children: React.ReactNode }) {
     return (
+        <QueryProvider>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -18,5 +20,6 @@ export function Provider({
                 {children}
             </TooltipProvider>
         </ThemeProvider>
+        </QueryProvider>
     )
 }
