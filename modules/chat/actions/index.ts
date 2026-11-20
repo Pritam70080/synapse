@@ -1,8 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/db";
+import { prisma, MessageRole, MessageType } from "@/lib/db";
 import { getCurrentUser } from "@/modules/authentication/actions";
-import { MessageRole, MessageType } from "@/lib/generated/prisma/browser";
 import { revalidatePath } from "next/cache";
 
 export interface ICreateChatWithMessage {

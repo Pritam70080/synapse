@@ -17,3 +17,5 @@ export const prisma = globalsForPrisma.prisma ?? new PrismaClient({adapter: adap
 if(process.env.NODE_ENV !== "production") {
     globalsForPrisma.prisma = prisma;
 }
+
+export * from "./generated/prisma/client";
