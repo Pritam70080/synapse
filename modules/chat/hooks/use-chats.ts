@@ -59,7 +59,8 @@ export const useDeleteChat = () => {
                 return;
             }
             queryClient.invalidateQueries({ queryKey: ["chats"] });
-            router.push("/chat");
+            toast.success("Chat deleted successfully.");
+            router.replace("/");
         },
         onError: (error: Error) => {
             console.error("Failed to delete chat.", error);

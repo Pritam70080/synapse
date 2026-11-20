@@ -12,7 +12,7 @@ export function ChatMessageView({ userName }: ChatMessageViewProps) {
   const [message, setMessage] = useState("")
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-32">
+    <div className="mx-auto w-full max-w-3xl space-y-16 sm:space-y-32">
       <ChatWelcomeTabs
         userName={userName}
         onMessageSelect={setMessage}

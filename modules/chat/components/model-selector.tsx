@@ -124,7 +124,7 @@ export function ModelSelector({
 
   const freeModels = useMemo(() => models.filter(isFreeModel), [models])
   const selectedModel =
-    freeModels.find((model) => model.id === value) ?? freeModels[0] ?? null
+    freeModels.find((model) => model.id === value) ?? freeModels[freeModels.length - 1] ?? null
   const filteredModels = useMemo(() => {
     const query = search.trim().toLocaleLowerCase()
     return query
