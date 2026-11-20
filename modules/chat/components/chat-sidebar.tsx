@@ -4,11 +4,11 @@ import Image from "next/image"
 import Link from "next/link"
 import { isToday, isYesterday } from "date-fns"
 import { EllipsisVertical, LoaderCircle, MessageSquareText, Plus, Search, Trash2, X } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { usePathname } from "next/navigation"
+import { toast } from "sonner"
 import { ThemeToggler } from "@/components/theme-toggler"
 import { Button } from "@/components/ui/button"
-import { demoChats } from "@/modules/chat/data/demo-chats"
 import { useDeleteChat, useGetChats } from "@/modules/chat/hooks/use-chats"
 import { UserButton } from "@/modules/authentication/components/user-button"
 import {
@@ -72,19 +72,19 @@ export function ChatSidebar() {
       chatPages.pages.length > 1 &&
       lastPage?.success === false)
 
+  useEffect(() => {
+    if (failedToLoadMoreChats) {
+      toast.error("Could not load more chats.")
+    }
+  }, [failedToLoadMoreChats])
+
   const chatGroups = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase()
-    const firstPage = chatPages?.pages[0]
     const loadedChats: SidebarChat[] =
       chatPages?.pages.flatMap((page) =>
         page.success && page.data ? page.data : [],
       ) ?? []
-    const chats =
-      loadedChats.length > 0
-        ? loadedChats
-        : firstPage?.success
-          ? demoChats
-          : []
+    const chats = loadedChats
     const filteredChats = chats
       .filter((chat) =>
         chat.title.toLocaleLowerCase().includes(normalizedQuery),
@@ -216,11 +216,6 @@ export function ChatSidebar() {
               "Show more"
             )}
           </Button>
-        )}
-        {failedToLoadMoreChats && (
-          <p role="alert" className="px-4 py-2 text-center text-sm text-destructive">
-            Could not load more chats.
-          </p>
         )}
       </SidebarContent>
 

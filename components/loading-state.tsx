@@ -15,8 +15,8 @@ export function LoadingState({
     <div
       role="status"
       aria-live="polite"
-      className={`flex flex-col items-center justify-center gap-4 ${
-        fullScreen ? "min-h-svh" : "py-8"
+      className={`flex w-full flex-col items-center justify-center gap-4 ${
+        fullScreen ? "min-h-svh" : "min-h-[50vh] py-8"
       } bg-background ${className}`}
     >
       <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">

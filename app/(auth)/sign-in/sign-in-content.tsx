@@ -1,10 +1,12 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { LoaderCircle } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
+import { SIGN_IN_PENDING_KEY } from "@/modules/authentication/components/auth-toast"
 
 type SocialProvider = "google" | "github"
 
@@ -12,11 +14,14 @@ export function SignInContent() {
   const [pendingProvider, setPendingProvider] = useState<SocialProvider | null>(
     null,
   )
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    sessionStorage.removeItem(SIGN_IN_PENDING_KEY)
+  }, [])
 
   async function handleSignIn(provider: SocialProvider) {
     setPendingProvider(provider)
-    setErrorMessage(null)
+    sessionStorage.setItem(SIGN_IN_PENDING_KEY, "true")
 
     try {
       const { error } = await authClient.signIn.social({
@@ -25,10 +30,12 @@ export function SignInContent() {
       })
 
       if (error) {
-        setErrorMessage(error.message || "Please try again in a moment.")
+        sessionStorage.removeItem(SIGN_IN_PENDING_KEY)
+        toast.error(error.message || "Please try again in a moment.")
       }
     } catch {
-      setErrorMessage(
+      sessionStorage.removeItem(SIGN_IN_PENDING_KEY)
+      toast.error(
         "We couldn't start sign-in. Check your connection and try again.",
       )
     } finally {
@@ -115,15 +122,6 @@ export function SignInContent() {
             Continue with GitHub
           </Button>
         </div>
-
-        {errorMessage ? (
-          <p
-            className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
-            role="alert"
-          >
-            {errorMessage}
-          </p>
-        ) : null}
 
         <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
           Secure sign-in with your existing account.

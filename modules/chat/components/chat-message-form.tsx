@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowUp, LoaderCircle } from "lucide-react"
+import { ArrowUp, LoaderCircle, Square } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useSidebar } from "@/components/ui/sidebar"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,17 +12,30 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import type { ChatStatus } from "ai"
 
 type ChatMessageFormProps = {
   message: string
   onMessageChange: (message: string) => void
+  chatId?: string
+  initialModel?: string
+  onModelChange?: (model: string) => void
+  onSendMessage?: (message: string, model: string) => Promise<void>
+  onStopMessage?: () => void
+  status?: ChatStatus
 }
 
 export function ChatMessageForm({
   message,
   onMessageChange,
+  chatId,
+  initialModel = "",
+  onModelChange,
+  onSendMessage,
+  onStopMessage,
+  status = "ready",
 }: ChatMessageFormProps) {
-  const [selectedModel, setSelectedModel] = useState("")
+  const [selectedModel, setSelectedModel] = useState(initialModel)
   const { isMobile, state } = useSidebar()
   const createChat = useCreateChat()
   const left = !isMobile && state === "expanded" ? "var(--sidebar-width)" : "0px"
@@ -33,6 +46,13 @@ export function ChatMessageForm({
     if (!content || createChat.isPending) return
 
     if (!selectedModel) {
+      return
+    }
+
+    if (chatId && onSendMessage) {
+      void onSendMessage(content, selectedModel).then(() => {
+        onMessageChange("")
+      })
       return
     }
 
@@ -48,11 +68,14 @@ export function ChatMessageForm({
 
   const canSend =
     message.trim().length > 0 &&
-    !createChat.isPending
+    !createChat.isPending &&
+    (chatId ? status === "ready" : true)
+  const isChatActive =
+    chatId && (status === "submitted" || status === "streaming")
 
   return (
     <div
-      className="pointer-events-none fixed right-0 bottom-0 z-20 px-4 pb-8 pt-10 sm:px-8"
+      className="pointer-events-none fixed right-0 bottom-0 z-20 max-w-full px-3 pb-4 pt-6 sm:px-8 sm:pb-8 sm:pt-10"
       style={{ left }}
     >
       <div
@@ -76,24 +99,45 @@ export function ChatMessageForm({
           rows={1}
           value={message}
           onChange={(event) => onMessageChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault()
+              event.currentTarget.form?.requestSubmit()
+            }
+          }}
           className="chat-message-textarea min-h-9 max-h-[40vh] overflow-y-auto rounded-2xl border-0 bg-transparent px-3 py-1 text-base shadow-none focus-visible:ring-0 dark:bg-transparent"
         />
 
         <div className="mt-1 flex items-center justify-between gap-3">
           <ModelSelector
             value={selectedModel}
-            onValueChange={setSelectedModel}
+            onValueChange={(model) => {
+              setSelectedModel(model)
+              onModelChange?.(model)
+            }}
           />
 
           <Tooltip>
             <TooltipTrigger
               render={
                 <Button
-                  type="submit"
+                  type={isChatActive ? "button" : "submit"}
                   size="icon"
-                  disabled={!canSend}
+                  disabled={isChatActive ? false : !canSend}
+                  onClick={
+                    isChatActive
+                      ? (event) => {
+                          event.preventDefault()
+                          onStopMessage?.()
+                        }
+                      : undefined
+                  }
                   aria-label={
-                    createChat.isPending ? "Creating chat" : "Send message"
+                    createChat.isPending
+                      ? "Creating chat"
+                      : isChatActive
+                        ? "Stop generating"
+                      : "Send message"
                   }
                 >
                   {createChat.isPending ? (
@@ -101,6 +145,8 @@ export function ChatMessageForm({
                       className="animate-spin"
                       aria-hidden="true"
                     />
+                  ) : isChatActive ? (
+                    <Square className="size-3.5 fill-current" aria-hidden="true" />
                   ) : (
                     <ArrowUp aria-hidden="true" />
                   )}
@@ -108,7 +154,11 @@ export function ChatMessageForm({
               }
             />
             <TooltipContent side="top">
-              {createChat.isPending ? "Creating chat..." : "Send message"}
+              {createChat.isPending
+                ? "Creating chat..."
+                : isChatActive
+                  ? "Stop generating"
+                : "Send message"}
             </TooltipContent>
           </Tooltip>
         </div>

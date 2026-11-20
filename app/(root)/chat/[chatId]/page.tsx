@@ -1,30 +1,66 @@
+import { Suspense } from "react"
 import { notFound } from "next/navigation"
-import { MessageSquareText } from "lucide-react"
-import { demoChats } from "@/modules/chat/data/demo-chats"
+import { getChatById } from "@/modules/chat/actions"
+import { LoadingState } from "@/components/loading-state"
+import {
+  ChatConversationView,
+  type StoredChatMessage,
+} from "@/modules/chat/components/chat-conversation-view"
 
-export default async function ChatPage({
+export default function ChatPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ chatId: string }>
+  searchParams: Promise<{ autoTrigger?: string | string[] }>
 }) {
-  const { chatId } = await params
-  const chat = demoChats.find((item) => item.id === chatId)
+  return (
+    <section className="flex min-h-0 w-full flex-1 overflow-hidden">
+      <Suspense
+        fallback={
+          <LoadingState
+            label="Loading your conversation..."
+            className="flex-1"
+          />
+        }
+      >
+        <ChatPageContent params={params} searchParams={searchParams} />
+      </Suspense>
+    </section>
+  )
+}
 
-  if (!chat) notFound()
+async function ChatPageContent({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ chatId: string }>
+  searchParams: Promise<{ autoTrigger?: string | string[] }>
+}) {
+  const [{ chatId }, query] = await Promise.all([params, searchParams])
+  const autoTrigger =
+    (Array.isArray(query.autoTrigger)
+      ? query.autoTrigger[0]
+      : query.autoTrigger) === "true"
+  const result = await getChatById(chatId)
+
+  if (!result.success || !result.data) notFound()
+
+  const storedMessages: StoredChatMessage[] = result.data.messages.map(
+    (message) => ({
+      id: message.id,
+      messageRole: message.messageRole,
+      content: message.content,
+      createdAt: message.createdAt.toISOString(),
+    }),
+  )
 
   return (
-    <section className="flex flex-1 items-center justify-center px-6 py-12">
-      <div className="max-w-md text-center">
-        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-          <MessageSquareText aria-hidden="true" className="size-5" />
-        </div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">
-          {chat.title}
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          This demo conversation is ready. Chat messages will appear here.
-        </p>
-      </div>
-    </section>
+    <ChatConversationView
+      chatId={chatId}
+      model={result.data.model}
+      messages={storedMessages}
+      autoTrigger={autoTrigger}
+    />
   )
 }

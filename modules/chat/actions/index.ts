@@ -96,7 +96,6 @@ export async function getChatById(chatId: string) {
         if (!chat) {
             return { success: false, message: "Chat not found." };
         }
-        revalidatePath("/", "page");
         return { success: true, data: chat };
     } catch (error) {
         console.error("Error fetching chat by ID:", error);

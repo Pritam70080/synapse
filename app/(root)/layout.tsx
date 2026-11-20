@@ -7,6 +7,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { ChatSidebar } from "@/modules/chat/components/chat-sidebar"
+import { AuthToast } from "@/modules/authentication/components/auth-toast"
 import type { ReactNode } from "react"
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -26,8 +27,9 @@ async function AuthenticatedLayout({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
+      <AuthToast />
       <ChatSidebar />
-      <SidebarInset className="min-h-svh">
+      <SidebarInset className="h-dvh min-h-0 overflow-hidden">
         <header className="flex h-14 items-center gap-3 border-b px-4 md:hidden">
           <SidebarTrigger aria-label="Open chat sidebar" />
           <span className="font-heading text-base font-bold tracking-tight">

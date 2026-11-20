@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@source "../node_modules/streamdown/dist/*.js";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -120,6 +121,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    min-width: 0;
   }
   ::selection {
     background: color-mix(in oklch, var(--primary) 28%, var(--background));
@@ -141,6 +143,45 @@
 }
 
 @layer components {
+  pre,
+  code,
+  table,
+  [role="table"] {
+    scrollbar-color: color-mix(in srgb, var(--muted-foreground) 45%, transparent)
+      transparent;
+    scrollbar-width: thin;
+  }
+
+  pre::-webkit-scrollbar,
+  code::-webkit-scrollbar,
+  table::-webkit-scrollbar,
+  [role="table"]::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  pre::-webkit-scrollbar-track,
+  code::-webkit-scrollbar-track,
+  table::-webkit-scrollbar-track,
+  [role="table"]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  pre::-webkit-scrollbar-thumb,
+  code::-webkit-scrollbar-thumb,
+  table::-webkit-scrollbar-thumb,
+  [role="table"]::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--muted-foreground) 40%, transparent);
+    border-radius: 9999px;
+  }
+
+  pre::-webkit-scrollbar-thumb:hover,
+  code::-webkit-scrollbar-thumb:hover,
+  table::-webkit-scrollbar-thumb:hover,
+  [role="table"]::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+
   .loading-progress-bar {
     animation: loading-progress 1.25s ease-in-out infinite;
   }
