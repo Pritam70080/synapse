@@ -1,6 +1,7 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { CHAT_SYSTEM_PROMPT } from "@/lib/prompts";
-import { prisma, MessageRole } from "@/lib/db";
+import { prisma } from "@/lib/db";
+import { MessageRole } from "../../../lib/generated/prisma/enums";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { NextRequest } from "next/server";
 import { getCurrentUser } from "@/modules/authentication/actions";

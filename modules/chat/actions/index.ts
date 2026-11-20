@@ -1,6 +1,7 @@
 "use server";
 
-import { prisma, MessageRole, MessageType } from "@/lib/db";
+import { prisma } from "@/lib/db";
+import { MessageRole, MessageType } from "@/lib/generated/prisma/enums";
 import { getCurrentUser } from "@/modules/authentication/actions";
 import { revalidatePath } from "next/cache";
 
